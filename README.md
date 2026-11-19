@@ -2,7 +2,7 @@
 
 An expected goals model built on StatsBomb open event data.
 
-**xG** is the probability that a shot becomes a goal, based on things such as the location where it was take, and how (header, etc.). 
+**xG** is the probability that a shot becomes a goal, based on things such as the location where it was taken, and how (header, etc.). 
 
 > **Status:** Baseline model complete. Player/Team dashboard is in progress.
 
@@ -10,7 +10,7 @@ An expected goals model built on StatsBomb open event data.
 
 [StatsBomb Open Data](https://github.com/statsbomb/open-data), accessed with [`statsbombpy`](https://github.com/statsbomb/statsbombpy).
 
-- **Competition:** FIFA Mens World Cup 2022 (64 matches)
+- **Competition:** FIFA Men's World Cup 2022 (64 matches)
 - **Shots:** 1,430 non-penalty shots (penalties excluded from dataset)
 
 Raw data isn't stored in the repo. To download it, run 'notebooks/01_load_shots.ipynb'.
@@ -33,18 +33,18 @@ Evaluated on the same held-out test shots:
  
 | Model | Log loss ↓ | Brier ↓ | ROC AUC ↑ | Total xG | Actual goals |
 |---|---|---|---|---|---|
-| This model | 0.283 | 0.083 | 0.799 | 35.0 | 38 |
+| This model | 0.279 | 0.082 | 0.807 | 35.0 | 38 |
 | StatsBomb xG | 0.255 | 0.074 | 0.844 | 33.5 | 38 |
 
-Due to only having three location-based features, my model trails StatsBomb's commerical xG, which also accounts for goalkeeper and defender positions, but it is reasonably close (ROC AUC for my model is 0.80 vs StatsBomb's 0.84) and is well calibrated - having 35.0 xG against 38 actual. This test set is small, so the numbers carry sampling noise, but the coefficients behave as expected. Converted to oddds multipliers:
+Due to only having three location-based features, my model trails StatsBomb's commercial xG, which also accounts for goalkeeper and defender positions, but it is reasonably close (ROC AUC for my model is 0.81 vs StatsBomb's 0.84) and is well calibrated - having 35.0 xG against 38 actual. This test set is small, so the numbers carry sampling noise, but the coefficients behave as expected. Converted to odds multipliers:
 
 | Feature | Odds multiplier | Interpretation |
 |---|---|---|
-| Distance | 0.89 per yard | Each extra yard cuts the odds of scoring by ~11% |
-| Angle | 1.008 per degree | Each extra 10° of goal visible raises the odds by ~8% |
-| Header | 0.29 | Headers have ~71% lower odds than foot shots from the same spot |
+| Distance | 0.90 per yard | Each extra yard cuts the odds of scoring by ~10% |
+| Angle | 1.022 per degree | Each extra 10° of goal visible raises the odds by ~25% |
+| Header | 0.28 | Headers have ~72% lower odds than foot shots from the same spot |
 
-Angle's effect appears small due to the fact that it overlaps heavily with distance as close shots tend to have wider angles. Once the distance is know, angle only really separates central shots from wide onces at the same range.
+Distance and angle overlap heavily, as close shots tend to have wider angles. Once the distance is known, angle mainly separates central shots from wide ones at the same range.
 
 ## Notebooks
 
@@ -69,9 +69,9 @@ Then run the notebooks in order.
 - [ ] Add more competitions to grow training set
 - [ ] Add new features: under pressure, play pattern, first-time shots, assist type, etc.
 - [ ] Calibration curves and cross-validation
--[ ] Split train/test by match to avoid leakage
-- [ ] Strealit dashboard: player and team xG, shot maps
+- [ ] Split train/test by match to avoid leakage
+- [ ] Streamlit dashboard: player and team xG, shot maps
 
 ## Acknowledgments
 
-Data provided [StatsBomb](https://statsbomb.com/) by through their free open data release.
+Data provided by [StatsBomb](https://statsbomb.com/) through their free open data release.
