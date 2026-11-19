@@ -10,10 +10,16 @@ An expected goals model built on StatsBomb open event data.
 
 [StatsBomb Open Data](https://github.com/statsbomb/open-data), accessed with [`statsbombpy`](https://github.com/statsbomb/statsbombpy).
 
-- **Competition:** FIFA Men's World Cup 2022 (64 matches)
-- **Shots:** 1,430 non-penalty shots (penalties excluded from dataset)
+- **Competitions:** FIFA World Cup 2018 & 2022, UEFA Euro 2020 & 2024, Premier League 2015/16 (610 matches)
+- **Shots:** 15,737 total; 15,423 after removing 172 penalties and 142 penalty-shootout kicks
 
-Raw data isn't stored in the repo. To download it, run 'notebooks/01_load_shots.ipynb'.
+Raw data isn't stored in the repo. To download it, run:
+
+```bash
+uv run python src/load_data.py
+```
+
+This caches each match's events in `data/raw/events/` and saves all shots to `data/processed/shots.parquet`. The first run takes about 20 minutes; re-runs load from cache in under a minute.
 
 ## Approach
 
@@ -28,6 +34,8 @@ Raw data isn't stored in the repo. To download it, run 'notebooks/01_load_shots.
 **Model:** logistic regression model, trained on 75% of shots and evaluated on the held-out remaining 25%, stratified by outcome.
 
 ## Results
+
+> Results below are from the World Cup 2022 baseline; being re-run on the expanded dataset.
 
 Evaluated on the same held-out test shots:
  
@@ -62,11 +70,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Then run the notebooks in order.
+Then download the data with `python src/load_data.py` and run the notebooks in order.
 
 ## Next steps
 
-- [ ] Add more competitions to grow training set
+- [x] Add more competitions to grow training set
 - [ ] Add new features: under pressure, play pattern, first-time shots, assist type, etc.
 - [ ] Calibration curves and cross-validation
 - [ ] Split train/test by match to avoid leakage
