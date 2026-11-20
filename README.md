@@ -21,6 +21,18 @@ uv run python src/load_data.py
 
 This caches each match's events in `data/raw/events/` and saves all shots to `data/processed/shots.parquet`. The first run takes about 20 minutes; re-runs load from cache in under a minute.
 
+### Cleaning
+
+Then clean the shots with `python src/clean.py`, which:
+
+- drops 142 penalty-shootout kicks (`period == 5`)
+- sets aside 172 penalties in `data/processed/penalties.parquet` 
+- splits each shot's location into `x`, `y` (x capped at 120) and adds `is_goal`
+- fills StatsBomb's True-only Tag columns (e.g. `under_pressure`, `shot_first_time`) with False where missing
+- checks for missing locations, off-pitch coordinates and duplicate shots
+
+Result: 15,423 shots in `data/processed/shots_clean.parquet`, with a 9.2% goal rate.
+
 ## Approach
 
 **Features**, calculated from each shot's location on StatsBomb's x,y pitch (120 x 80):
@@ -56,9 +68,10 @@ Distance and angle overlap heavily, as close shots tend to have wider angles. On
 
 ## Notebooks
 
-1. `01_load_shots.ipynb`: downloads World Cup 2022 shot data from StatsBomb
-2. `02_features.ipynb`: builds distance, angle and header features
-3. `03_baseline_model.ipynb`: trains the logistic regression and compares it to StatsBomb's xG
+1. `01_load_shots.ipynb`: first look at World Cup 2022 shot data (loading now done by `src/load_data.py`)
+2. `02_eda.ipynb`: goal rates by body part, shot type, pressure and play pattern, plus a shot map
+3. `03_features.ipynb`: builds distance, angle and header features
+4. `04_baseline_model.ipynb`: trains the logistic regression and compares it to StatsBomb's xG
 
 ## Running it
 
@@ -70,7 +83,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Then download the data with `python src/load_data.py` and run the notebooks in order.
+Then download and clean the data, and run the notebooks in order:
+
+```bash
+python src/load_data.py
+python src/clean.py
+```
 
 ## Next steps
 
